@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Snd from "snd-lib";
 import { keyframes, styled } from "@stitches/react";
 import { useEffect } from "react";
+import useKeyPress from "./useKeyPress";
 
 const snd = new Snd();
 snd.load(Snd.KITS.SND01);
@@ -407,6 +408,21 @@ function App() {
   const canvas = useRef();
   const setCapture = useStore((state) => state.setCapture);
   const circleCapture = useStore((state) => state.circleCapture);
+
+  useKeyPress(" ", () => {
+    if (!circleCapture) {
+      const base64 = canvas.current.toDataURL("image/png");
+      const rect = canvas.current.getClientRects();
+      setCapture({
+        data: base64,
+        x: 400,
+        y: 400,
+        width: rect[0].width,
+        height: rect[0].height,
+      });
+      snd.play(Snd.SOUNDS.TOGGLE_ON);
+    }
+  });
 
   const handleMouseDown = (event) => {
     const timeoutId = setTimeout(() => {
